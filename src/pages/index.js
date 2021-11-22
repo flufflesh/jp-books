@@ -41,9 +41,9 @@ const IndexPage = () => {
   };
 
   React.useEffect(() => {
-    fetch("/static/items.json")
+    import("../../content/items.json")
       .then((response) => {
-        return response.json();
+        return response.default;
       })
       .then((items) => {
         setItems(items);

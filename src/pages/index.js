@@ -12,15 +12,6 @@ import {
 import * as React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-// styles
-const pageStyles = {
-  color: "#232129",
-  paddingLeft: 96,
-  paddingRight: 96,
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-  height: "100%",
-};
-
 function debounce(func, timeout = 300) {
   let timer;
   return (...args) => {
@@ -36,6 +27,7 @@ const IndexPage = () => {
   const [shownItems, setShownItems] = React.useState([]);
   const [items, setItems] = React.useState([]);
   const [isSearching, setIsSearching] = React.useState(false);
+  const [isSearchingByLetter, setIsSearchingByLetter] = React.useState(false);
   const goNext = () => {
     setShownItems([...items.slice(0, shownItems.length + 50)]);
   };
@@ -67,6 +59,20 @@ const IndexPage = () => {
     setShownItems(newItems);
   };
 
+  const searchByLetterStarts = (e) => {
+    if (e.target.value !== "") {
+      setIsSearchingByLetter(true);
+    } else {
+      setIsSearchingByLetter(false);
+      setShownItems(items.slice(0, 50));
+      return;
+    }
+    const newItems = items.filter((item) =>
+      item.name.toLowerCase().startsWith(e.target.value.toLowerCase())
+    );
+    setShownItems(newItems);
+  };
+
   const debouncedSearch = React.useCallback(debounce(search, 500), []);
 
   const { colorMode, toggleColorMode } = useColorMode();
@@ -84,11 +90,18 @@ const IndexPage = () => {
           type="text"
           placeholder="search here"
           onChange={debouncedSearch}
+          disabled={isSearchingByLetter}
+        />
+        <Input
+          type="text"
+          placeholder="search by letter(s) (starting with...)"
+          onChange={searchByLetterStarts}
+          disabled={isSearching}
         />
         <InfiniteScroll
           next={() => goNext()}
           dataLength={shownItems.length}
-          hasMore={!isSearching}
+          hasMore={!isSearching && !isSearchingByLetter}
           endMessage={<p>done</p>}
           loader={<p style={{ padding: 0, margin: 0 }}>loading...</p>}
           scrollThreshold="100px"

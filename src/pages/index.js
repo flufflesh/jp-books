@@ -28,6 +28,7 @@ const IndexPage = () => {
   const [items, setItems] = React.useState([]);
   const [isSearching, setIsSearching] = React.useState(false);
   const [isSearchingByLetter, setIsSearchingByLetter] = React.useState(false);
+
   const goNext = () => {
     setShownItems([...items.slice(0, shownItems.length + 50)]);
   };
@@ -51,11 +52,12 @@ const IndexPage = () => {
       setShownItems(items.slice(0, 50));
       return;
     }
-    const newItems = items.filter(
-      (item) =>
-        item.name.includes(e.target.value) ||
+    const newItems = items.filter((item) => {
+      return (
+        item.name.toLowerCase().includes(e.target.value) ||
         item.size.toLowerCase().includes(e.target.value.toLowerCase())
-    );
+      );
+    });
     setShownItems(newItems);
   };
 
@@ -73,7 +75,7 @@ const IndexPage = () => {
     setShownItems(newItems);
   };
 
-  const debouncedSearch = React.useCallback(debounce(search, 500), []);
+  const debouncedSearch = React.useCallback(debounce(search, 500), [items]);
 
   const { colorMode, toggleColorMode } = useColorMode();
   const bgColor = useColorModeValue("gray.50", "gray.700");
